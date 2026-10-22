@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F2F4F7">
 <title>손번쩍 · 실시간 설문·Q&amp;A 제안용 데모</title>
 <meta name="description" content="행사 진행자가 QR로 참여자를 모으고, 설문·퀴즈·워드클라우드·Q&amp;A 결과를 실시간으로 보는 웹 서비스의 제안용 데모예요. 이름과 숫자는 모두 예시예요.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232457F5'/%3E%3Crect x='8' y='15' width='4' height='9' rx='2' fill='white'/%3E%3Crect x='14' y='8' width='4' height='16' rx='2' fill='white'/%3E%3Crect x='20' y='12' width='4' height='12' rx='2' fill='white' opacity='.7'/%3E%3C/svg%3E">
@@ -55,6 +57,9 @@ svg{display:block;flex:none}
 .btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
 .btn.dark:hover{background:#2B3440}
 .btn.dark:disabled{background:#6B7480;border-color:#6B7480;color:#E5E8EB}
+.btn.dark[aria-busy="true"]{background:#2B3440;border-color:#2B3440;color:#fff;cursor:progress}
+.busy-dot{width:8px;height:8px;border-radius:50%;background:var(--ok-dot);flex:none;animation:blink 1s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
 .btn.ghost{border-color:transparent;background:transparent;color:var(--ink-2)}
 .btn.ghost:hover{background:var(--track)}
 .btn.lg{height:var(--h-lg);padding:0 20px;font-size:15px}
@@ -107,6 +112,7 @@ textarea.in{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-h
 .strip-in{max-width:1248px;margin:0 auto;padding:8px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:56px}
 .strip-t{font-size:13px;color:var(--ink-2);flex:1;min-width:220px}
 .strip-t b{color:var(--warn);font-weight:700;margin-right:6px}
+.strip-t .short{display:none}
 .strip-b{display:flex;gap:8px;flex-wrap:wrap}
 
 /* 위 내비 */
@@ -121,7 +127,7 @@ textarea.in{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-h
 .top-r{margin-left:auto;display:flex;align-items:center;gap:12px}
 .plan{font-size:13px;color:var(--mut)}
 .plan b{color:var(--ink-2);font-weight:600}
-.avatar{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--line-2);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink-2)}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--line-2);display:grid;place-items:center;color:var(--ink-2)}
 
 .page{max-width:1248px;margin:0 auto;padding:16px 24px 48px}
 
@@ -173,6 +179,8 @@ textarea.in{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-h
 .demo-hint b{font-weight:700;color:var(--ink)}
 .res-f .next{margin-left:auto;font-size:13px;color:var(--mut);display:flex;align-items:center;gap:8px;min-width:0}
 .res-f .next span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
+.swap{animation:swap .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes swap{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
 .empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:40px 16px}
 .empty .e-ic{width:48px;height:48px;border-radius:50%;background:var(--soft);display:grid;place-items:center;color:var(--mut);margin-bottom:4px}
 .empty b{font-size:15px;font-weight:600}
@@ -243,6 +251,8 @@ textarea.in{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-h
 .q-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .likes{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;color:var(--ink-2);height:28px;padding:0 10px;border-radius:var(--r-pill);background:var(--soft)}
 .likes.hot{color:var(--brand-text);background:var(--brand-tint)}
+.bump{animation:bump .42s cubic-bezier(.2,.8,.2,1)}
+@keyframes bump{0%{transform:scale(1)}35%{transform:scale(1.22)}100%{transform:scale(1)}}
 .q-btns{display:flex;gap:4px}
 .ibtn{width:32px;height:32px;border-radius:var(--r-sm);display:grid;place-items:center;color:var(--mut);transition:background .15s,color .15s}
 .ibtn:hover{background:var(--track);color:var(--ink)}
@@ -325,10 +335,19 @@ textarea.in{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-h
 .pr-title{font-size:44px;font-weight:700;letter-spacing:-.03em;line-height:1.25;margin:16px 0 8px}
 .pr-total{font-size:17px;color:var(--mut);margin-bottom:32px}
 .pr-total b{color:var(--ink);font-size:24px;margin-right:2px}
-.pr-join{padding:32px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;align-self:start}
+.pr-side{display:flex;flex-direction:column;gap:24px;align-self:start;min-width:0}
+.pr-join{padding:32px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
 .pr-join .qr{width:240px;height:240px;padding:10px;margin-bottom:12px}
 .pr-join .lbl{font-size:15px;color:var(--mut)}
 .pr-join .live{margin-top:12px;font-size:15px}
+.pr-qa{padding:24px 24px 12px}
+.pr-qa .card-h{margin-bottom:4px}
+.prq{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-top:1px solid var(--line-2)}
+.prq:first-child{border-top:0}
+.prq p{flex:1;font-size:15px;line-height:1.45;font-weight:500}
+.prq .likes{flex:none}
+.pr-qa .help{padding:8px 0 16px}
+@media (max-height:960px){.pr-join{padding:24px}.pr-join .qr{width:184px;height:184px;margin-bottom:4px}.pr-join .code{font-size:32px}}
 
 /* 토스트 */
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,16px);opacity:0;background:var(--ink);color:#fff;font-size:14px;font-weight:500;padding:12px 20px;border-radius:var(--r-md);box-shadow:var(--sh-pop);z-index:60;transition:opacity .2s,transform .2s;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
@@ -358,7 +377,11 @@ body.pmode .toast.on{transform:translate(-50%,0)}
 .opt .rd{width:22px;height:22px;border-radius:50%;border:2px solid #C9CFD6;flex:none;display:grid;place-items:center;transition:border-color .15s}
 .opt[aria-checked="true"]{border-color:var(--brand);background:var(--brand-tint)}
 .opt[aria-checked="true"] .rd{border-color:var(--brand)}
-.opt[aria-checked="true"] .rd::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--brand)}
+.opt[aria-checked="true"] .rd::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--brand);animation:dotin .22s cubic-bezier(.2,.8,.2,1)}
+@keyframes dotin{0%{transform:scale(0)}100%{transform:scale(1)}}
+.opt{transition:border-color .15s,background .15s,transform .12s}
+.opt:active{transform:scale(.985)}
+.cta:not(:disabled):active{transform:scale(.98)}
 .p-done{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
 .p-sub{font-size:13px;color:var(--mut);margin-top:16px}
 .p-cta{position:sticky;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 70%,rgba(242,244,247,0))}
@@ -383,25 +406,53 @@ body.pmode .toast.on{transform:translate(-50%,0)}
 .p-join{padding:32px 16px}
 .p-join h1{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:24px 0 4px}
 .p-join .codein{height:64px;font-size:32px;font-weight:700;text-align:center;letter-spacing:.2em;border-radius:var(--r-md);margin-top:24px}
+.p-join .demo-code{margin-top:12px;height:44px;padding:0 16px;font-size:14px;color:var(--brand-text);background:var(--brand-tint);border-color:var(--brand-tint)}
+.p-join .demo-code:hover{background:var(--brand-tint-2)}
 .skel{height:16px;border-radius:8px;background:linear-gradient(90deg,var(--track),var(--soft),var(--track));background-size:200% 100%;animation:sk 1.2s linear infinite}
 @keyframes sk{0%{background-position:100% 0}100%{background-position:-100% 0}}
 
-/* ===== 반응형 ===== */
-@media (max-width:1180px){
-  .grid{grid-template-columns:240px minmax(0,1fr)}
+/* ===== 진행자 + 참여자 휴대폰 미리보기 ===== */
+.hwrap{display:flex;align-items:flex-start;min-height:100vh}
+.hm{flex:1;min-width:0;container:hm/inline-size}
+.dock{position:sticky;top:0;height:100vh;width:372px;flex:none;border-left:1px solid var(--line-2);display:flex;flex-direction:column;align-items:center;padding:16px 24px 16px;gap:12px;overflow:hidden}
+.dk-h{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dk-h b{display:block;font-size:15px;font-weight:700;line-height:1.3}
+.dk-h span{display:block;font-size:13px;color:var(--mut)}
+.dk-h .btn.icon{width:44px;height:44px;flex:none}
+.phone{--ps:.84;background:#fff;border:1px solid var(--line);border-radius:44px;padding:10px;box-shadow:var(--sh-pop);flex:none}
+.phone .scr{width:calc(360px * var(--ps));height:calc(780px * var(--ps));border-radius:34px;overflow:hidden;background:var(--bg);position:relative}
+.phone iframe{width:360px;height:780px;border:0;display:block;transform:scale(var(--ps));transform-origin:0 0}
+.dk-f{font-size:12px;color:var(--mut);text-align:center;max-width:300px;line-height:1.5}
+@media (max-width:1279px){.dock,#bDock{display:none!important}}
+@container hm (max-width:1180px){
+  .grid{grid-template-columns:260px minmax(0,1fr)}
   .qa{grid-column:1/-1;position:static;max-height:none}
-  .ev{grid-template-columns:1fr auto;}
-  .ev-act{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}
+  .ev{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"main join" "act join";row-gap:20px}
+  .ev-main{grid-area:main;align-self:end}
+  .join{grid-area:join}
+  .ev-act{grid-area:act;flex-direction:row;justify-content:flex-start;align-items:center;gap:24px;align-self:start}
+  .strip-t .long{display:none}
+  .strip-t .short{display:inline}
 }
+
+/* ===== 반응형 ===== */
 @media (max-width:860px){
   .top-in{flex-wrap:wrap;gap:12px;padding:12px 16px 0}
   .top-r .plan{display:none}
   .pills{order:3;width:100%}
   .pills button{flex:1;padding:0 8px;height:44px}
   .logo{min-height:44px}
-  .strip-in{padding:8px 16px}
+  .strip-in{padding:10px 0 12px;gap:8px;min-height:0}
+  .strip-t{padding:0 16px;flex-basis:100%;min-width:0}
+  .strip-t .long{display:none}
+  .strip-t .short{display:inline}
+  .strip-b{flex-wrap:nowrap;width:100%;overflow-x:auto;padding:0 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+  .strip-b::-webkit-scrollbar{display:none}
+  .strip-b .btn{flex:none}
   .page{padding:12px 16px 40px}
-  .ev{grid-template-columns:1fr;gap:16px;padding:20px}
+  .ev{grid-template-columns:1fr;grid-template-areas:"main" "join" "act";gap:16px;padding:20px}
+  .ev-main{align-self:auto}
+  .ev-act{justify-content:space-between;gap:12px}
   .ev h1{font-size:24px}
   .join{padding:12px 16px 12px 12px;gap:16px}
   .join .qr{width:96px;height:96px}
@@ -427,7 +478,9 @@ body.pmode .toast.on{transform:translate(-50%,0)}
   .bars.lg .br-lab{font-size:17px}
   .bars.lg .br-pct{font-size:20px}
   .bars.lg .track{height:28px}
+  .pr-side{gap:16px}
   .pr-join{flex-direction:row;text-align:left;padding:16px;gap:16px}
+  .pr-qa{padding:20px 20px 8px}
   .pr-join .qr{width:120px;height:120px;margin:0}
   .foot{padding:0 16px 32px}
   .btn,.seg button{min-height:44px}
@@ -462,6 +515,8 @@ body.pmode .toast.on{transform:translate(-50%,0)}
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M4 4l16 16M10.6 6A9.7 9.7 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-2.6 3.4M6.4 7.4A16.5 16.5 0 0 0 2.5 12S6 18.5 12 18.5c1.5 0 2.9-.4 4.1-1"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-side" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M14.5 4v16"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></symbol>
   <symbol id="i-next" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
   <symbol id="i-mark" viewBox="0 0 24 24"><path d="M6 20v-7M12 20V5M18 20v-10" stroke="#fff" stroke-width="2.6" stroke-linecap="round" fill="none"/></symbol>
 </svg>
@@ -507,6 +562,21 @@ function tweenNum(el,to,suffix){
 }
 let toastT;
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600);}
+/* 목록을 다시 그릴 때 자리가 바뀐 줄은 미끄러지듯 옮겨요 (FLIP) */
+function flipHTML(box,html){
+  if(!box||box._h===html)return;
+  const old=new Map();
+  if(!REDUCED&&box.getClientRects().length)$$('[data-qid]',box).forEach(el=>old.set(el.dataset.qid,el.getBoundingClientRect().top));
+  box.innerHTML=html;box._h=html;
+  if(!old.size)return;
+  $$('[data-qid]',box).forEach(el=>{const t=old.get(el.dataset.qid);if(t==null||!el.animate)return;const d=t-el.getBoundingClientRect().top;
+    if(Math.abs(d)>2)el.animate([{transform:`translateY(${d}px)`},{transform:'translateY(0)'}],{duration:460,easing:'cubic-bezier(.2,.8,.2,1)'});});
+}
+/* 짧은 효과가 다시 그리기로 끊기지 않게, 시작한 시각만큼 늦춰서 이어 붙여요 */
+function animAttr(cls,at,dur){const e=performance.now()-(at||-1e9);return e<dur?` ${cls}" style="animation-delay:-${Math.round(e)}ms`:'';}
+function likeTracker(){const prev=new Map(),at=new Map();
+  return {scan(qs){const now=performance.now();qs.forEach(q=>{const p=prev.get(q.id);if(p!=null&&q.likes>p)at.set(q.id,now);prev.set(q.id,q.likes);});},
+    cls(q){return animAttr('bump',at.get(q.id),420);},reset(){prev.clear();at.clear();}};}
 
 /* ---------- QR 코드 만들기 (외부 라이브러리 없이, 바이트 모드·오류정정 M) ---------- */
 const QR=(function(){
@@ -596,7 +666,8 @@ window.__QR=QR;
 /* 탭마다 다른 이름표. 진행자 탭은 매번 새로, 참여자 탭은 새로고침해도 같은 사람으로 남게 해요.
    (새 탭으로 열면 sessionStorage가 복사되므로 진행자는 저장하지 않아요) */
 const IS_JOIN=/^#join/.test(location.hash);
-const CLIENT=IS_JOIN?(()=>{try{let v=sessionStorage.getItem('sbj-pclient');if(!v){v='p-'+rid();sessionStorage.setItem('sbj-pclient',v);}return v;}catch(e){return 'p-'+rid();}})():'h-'+rid();
+const IS_DOCK=IS_JOIN&&/&dock\b/.test(location.hash);
+const CLIENT=IS_DOCK?'p-'+rid():IS_JOIN?(()=>{try{let v=sessionStorage.getItem('sbj-pclient');if(!v){v='p-'+rid();sessionStorage.setItem('sbj-pclient',v);}return v;}catch(e){return 'p-'+rid();}})():'h-'+rid();
 const bus={
   ch:null,seen:new Set(),fns:[],
   init(){
@@ -636,6 +707,9 @@ const POOL_Q=[
   ['AI 답이 틀렸을 때 빨리 알아채는 요령이 궁금해요',''],
   ['무료 버전으로도 업무에 충분한가요?','']
 ];
+/* 질문마다 관심도(예시). 늦게 들어온 질문도 좋아요를 모아 위로 올라가는 모습이 보이게 해요 */
+const POP_Q=new Map(POOL_Q.map((q,i)=>[q[0],[4,3,2,7,2,5,3,1][i]]));
+function pickQ(qs){return qs.length?pickW(qs.map(q=>[q,POP_Q.get(q.text)||2])):null;}
 const POOL_W=[['효율',9],['자동화',7],['보고서',6],['걱정',5],['번역',4],['저작권',4],['검색',3],['편리',3],['일자리',3],['요약',3],['보안',2],['신기함',2],['비용',1],['회의록',1],['공부',1]];
 const WEIGHTS={a1:[42,31,17,10],a2:[63,9,11,17]};
 function pickW(arr){const t=arr.reduce((s,x)=>s+x[1],0);let r=Math.random()*t;for(const x of arr){r-=x[1];if(r<=0)return x[0];}return arr[0][0];}
@@ -739,8 +813,9 @@ addEventListener('hashchange',()=>{const j=/^#join/.test(location.hash);if(j!==!
    진행자 화면
    ===================================================================== */
 function host(){
-  let S=seed(),tab='live',qaSort='hot',presentOpen=false,qrCodeShown=null,simCount=0,simBusy=false;
-  let timers=[],seenQ=new Set(),composer=null;
+  let S=seed(),tab='live',qaSort='hot',presentOpen=false,qrCodeShown=null,simCount=0,simBusy=false,simJoined=0;
+  let timers=[],seenQ=new Map(),composer=null,lastResId=null;
+  const likesT=likeTracker();
   const pastEvents=[
     {name:'신입사원 입문 교육 퀴즈',date:'2026-10-30',time:'10:00',n:86,state:'끝남'},
     {name:'3분기 팀장 워크숍 Q&A',date:'2026-09-24',time:'15:00',n:41,state:'끝남'}
@@ -749,11 +824,12 @@ function host(){
   const joinUrl=code=>location.href.split('#')[0]+'#join='+code;
   document.title='손번쩍 진행자 · 실시간 설문·Q&A 제안용 데모';
 
-  $('#app').innerHTML=`
+  $('#app').innerHTML=`<div class="hwrap"><div class="hm">
   <div class="strip"><div class="strip-in">
-    <p class="strip-t"><b>제안용 데모 · 예시</b>행사 이름과 숫자는 모두 예시예요. 아래 버튼으로 휴대폰 참여자가 들어온 것처럼 볼 수 있어요.</p>
+    <p class="strip-t"><b>제안용 데모 · 예시</b><span class="long">행사 이름과 숫자는 모두 예시예요. 아래 버튼으로 휴대폰 참여자가 들어온 것처럼 볼 수 있어요.</span><span class="short">이름과 숫자는 모두 예시예요</span></p>
     <div class="strip-b">
       <button class="btn dark" id="bSim">${ic('users','sm')}가상 참여자 30명 들여보내기</button>
+      <button class="btn" id="bDock" hidden>${ic('side','sm')}휴대폰 화면 옆에 띄우기</button>
       <button class="btn" id="bTab">${ic('tab','sm')}참여자 화면 새 탭으로 열기</button>
       <button class="btn ghost" id="bReset">${ic('reset','sm')}처음 상태로</button>
     </div>
@@ -765,7 +841,7 @@ function host(){
       <button role="tab" data-tab="live" aria-selected="true">진행 화면</button>
       <button role="tab" data-tab="report" aria-selected="false">리포트</button>
     </nav>
-    <div class="top-r"><span class="plan">요금제 <b>프로</b></span><span class="avatar" aria-label="진행자 계정">진행</span></div>
+    <div class="top-r"><span class="plan">요금제 <b>프로</b></span><span class="avatar" role="img" aria-label="진행자 계정">${ic('user','sm')}</span></div>
   </div></header>
   <main class="page">
     <div id="vLive">
@@ -824,9 +900,15 @@ function host(){
     <div id="vEvents" hidden></div>
   </main>
   <footer class="foot">
-    <p>이 데모는 같은 브라우저의 탭끼리 BroadcastChannel로 주고받아요. 실제 서비스는 웹소켓 서버로 휴대폰 수백 대를 동시에 연결해요.</p>
+    <p>이 데모는 같은 브라우저 안의 화면끼리 BroadcastChannel로 주고받아요. 실제 서비스는 웹소켓 서버로 참여자 휴대폰을 연결하고, 목표 인원은 함께 정한 뒤 부하 시험으로 확인해요.</p>
     <p>데모에 없는 것: 회원가입·로그인, 구독 결제, 관리자 화면(사용자·행사 관리). 제안서 일정에 모두 들어 있어요.</p>
   </footer>
+  </div>
+  <aside class="dock" id="dock" hidden aria-label="참여자 휴대폰 미리보기">
+    <div class="dk-h"><div><b>참여자 휴대폰</b><span>여기서 직접 눌러 보세요</span></div><button class="btn ghost icon" id="dkClose" aria-label="휴대폰 화면 닫기" title="휴대폰 화면 닫기">${ic('x','sm')}</button></div>
+    <div class="phone" id="phone"><div class="scr" id="phoneScr"></div></div>
+    <p class="dk-f">진행자 화면과 실시간으로 이어진 참여자 화면이에요. 투표하면 왼쪽 막대가 바로 움직여요.</p>
+  </aside></div>
   <div class="present" id="present" hidden role="dialog" aria-modal="true" aria-label="발표 화면">
     <div class="pr-top">
       <span class="logo"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mark"/></svg></span>손번쩍</span>
@@ -840,14 +922,17 @@ function host(){
         <p class="pr-total"><b class="num" id="prN" data-v="0">0</b>명 응답</p>
         <div id="prRes"></div>
       </section>
-      <aside class="card pr-join">
-        <div class="qr" id="prQr"></div>
-        <div>
-          <p class="lbl">참여 코드</p>
-          <p class="code num" id="prCode"></p>
-          <p class="live"><span class="dot on"></span><span><b class="num" id="prPc" data-v="0">0</b>명 참여 중</span></p>
-        </div>
-      </aside>
+      <div class="pr-side">
+        <aside class="card pr-join">
+          <div class="qr" id="prQr"></div>
+          <div>
+            <p class="lbl">참여 코드</p>
+            <p class="code num" id="prCode"></p>
+            <p class="live"><span class="dot on"></span><span><b class="num" id="prPc" data-v="0">0</b>명 참여 중</span></p>
+          </div>
+        </aside>
+        <section class="card pr-qa" aria-label="인기 질문"><div class="card-h"><h2>인기 질문</h2><span class="sub num" id="prQn"></span></div><div id="prQl"></div></section>
+      </div>
     </div>
   </div>
   <div id="modalRoot"></div>`;
@@ -885,11 +970,15 @@ function host(){
     tweenNum($('#pc'),pc);tweenNum($('#prPc'),pc);
     $('#pcDot').classList.toggle('on',pc>0);
     $('#swMod').setAttribute('aria-checked',String(!!ev.moderate));
+    likesT.scan(S.questions);
     renderActs();renderRes(ac);renderQA();
     if(presentOpen)renderPresent(ac);
     if(tab==='report')renderReport();
-    $('#bSim').disabled=simBusy;
-    $('#bSim').innerHTML=ic('users','sm')+(simBusy?'참여자가 들어오는 중…':simCount?'가상 참여자 30명 더 들여보내기':'가상 참여자 30명 들여보내기');
+    if(tab==='events'&&$('#evCurN'))$('#evCurN').textContent=fmtN(pc)+'명';
+    const bs=$('#bSim');
+    bs.setAttribute('aria-busy',String(simBusy));bs.setAttribute('aria-disabled',String(simBusy));
+    const lab=simBusy?`<span class="busy-dot" aria-hidden="true"></span>`+(simJoined<30?`참여자가 들어오는 중 <span class="num">${simJoined}/30</span>`:'참여자가 투표·질문하는 중'):ic('users','sm')+(simCount?'가상 참여자 30명 더 들여보내기':'가상 참여자 30명 들여보내기');
+    if(bs._h!==lab){bs.innerHTML=lab;bs._h=lab;}
   }
 
   function stateLabel(a){return a.state==='live'?(a.closed?'마감':'진행 중'):a.state==='done'?'끝남':'대기';}
@@ -911,6 +1000,8 @@ function host(){
       (ac.type==='quiz'&&ac.revealed?'<span class="chip ok"><i></i>정답 공개</span>':'');
     if($('#resChips')._h!==chips){$('#resChips').innerHTML=chips;$('#resChips')._h=chips;}
     $('#resTitle').textContent=ac.title;
+    if(lastResId!==null&&lastResId!==ac.id&&!REDUCED){const w=$('#resWrap');w.classList.remove('swap');void w.offsetWidth;w.classList.add('swap');}
+    lastResId=ac.id;
     const n=respondents(ac),pc=pcount(S);
     tweenNum($('#resN'),n);
     $('#resRate').textContent=pc?`· 참여자의 ${Math.min(100,Math.round(n/pc*100))}%`:'';
@@ -927,13 +1018,13 @@ function host(){
   }
 
   function qItem(q,pend){
-    const isNew=!seenQ.has(q.id);seenQ.add(q.id);
-    return `<div class="q ${q.status==='answered'?'answered':''} ${isNew?'new':''}" data-qid="${q.id}">
+    if(!seenQ.has(q.id))seenQ.set(q.id,performance.now());
+    return `<div class="q${q.status==='answered'?' answered':''}${animAttr('new',seenQ.get(q.id),500)}" data-qid="${q.id}">
       <div class="q-main"><p class="q-t">${esc(q.text)}</p>
         <p class="q-m"><span>${esc(q.name)}</span><span aria-hidden="true">·</span><span>${ago(q.ts)}</span>${q.status==='answered'?'<span class="chip ok"><i></i>답변함</span>':''}</p></div>
       <div class="q-side">
         ${pend?`<div class="q-btns"><button class="btn mini primary" data-q="approve">공개</button><button class="btn mini" data-q="drop">숨기기</button></div>`:
-        `<span class="likes num ${q.likes>=5?'hot':''}" title="좋아요">${ic('thumb','sm')}${q.likes}</span>
+        `<span class="likes num${q.likes>=5?' hot':''}${likesT.cls(q)}" title="좋아요">${ic('thumb','sm')}${q.likes}</span>
          <div class="q-btns"><button class="ibtn" data-q="answer" aria-pressed="${q.status==='answered'}" aria-label="답변 완료로 표시" title="답변 완료로 표시">${ic('check','sm')}</button><button class="ibtn" data-q="drop" aria-label="질문 숨기기" title="질문 숨기기">${ic('x','sm')}</button></div>`}
       </div></div>`;
   }
@@ -947,16 +1038,25 @@ function host(){
     let h='';
     if(pend.length)h+=`<div class="pend"><p class="pend-h">검토 대기 ${pend.length}개 · 공개하면 참여자에게 보여요</p>${pend.map(q=>qItem(q,true)).join('')}</div>`;
     h+=sorted.length?sorted.map(q=>qItem(q,false)).join(''):(pend.length?'':`<div class="empty"><span class="e-ic">${ic('qa')}</span><b>아직 질문이 없어요</b><p>참여자가 휴대폰에서 질문을 보내면 여기에 바로 떠요. 좋아요가 많은 질문이 위로 올라와요.</p></div>`);
-    $('#qList').innerHTML=h;
+    flipHTML($('#qList'),h);
   }
 
   function renderPresent(ac){
     $('#prEv').textContent=S.event.name;
-    if(!ac){$('#prChips').innerHTML='';$('#prTitle').textContent='곧 첫 질문이 올라와요';rvPresent.update(null);return;}
-    $('#prChips').innerHTML=`<span class="chip type">${ic(ac.type,'sm')}${TYPE[ac.type]}</span>`+(ac.closed?'<span class="chip neu"><i></i>마감</span>':'');
+    if(!ac){$('#prChips').innerHTML='';$('#prChips')._h='';$('#prTitle').textContent='곧 첫 질문이 올라와요';rvPresent.update(null);renderPresentQA();return;}
+    const pch=`<span class="chip type">${ic(ac.type,'sm')}${TYPE[ac.type]}</span>`+(ac.closed?'<span class="chip neu"><i></i>마감</span>':'<span class="chip info"><i></i>실시간</span>')+(ac.type==='quiz'&&ac.revealed?'<span class="chip ok"><i></i>정답 공개</span>':'');
+    if($('#prChips')._h!==pch){$('#prChips').innerHTML=pch;$('#prChips')._h=pch;}
     $('#prTitle').textContent=ac.title;
     tweenNum($('#prN'),respondents(ac));
     rvPresent.update(ac);
+    renderPresentQA();
+  }
+  function renderPresentQA(){
+    const open=S.questions.filter(q=>q.status==='open');
+    const top=open.slice().sort((a,b)=>b.likes-a.likes||a.ts-b.ts).slice(0,3);
+    $('#prQn').textContent=open.length?'질문 '+open.length+'개':'';
+    flipHTML($('#prQl'),top.length?top.map(q=>`<div class="prq" data-qid="${q.id}"><p>${esc(q.text)}</p><span class="likes num${q.likes>=5?' hot':''}${likesT.cls(q)}">${ic('thumb','sm')}${q.likes}</span></div>`).join('')
+      :'<p class="help">참여자가 질문을 보내면 좋아요 많은 순서로 여기에 떠요.</p>');
   }
 
   function renderReport(){
@@ -1017,7 +1117,7 @@ function host(){
         <section class="card evs-list"><div class="card-h"><h2>내 행사</h2><span class="sub">${list.length}개</span></div>
           <div class="erow head"><span>행사</span><span class="c-date">날짜</span><span class="r">참여자</span><span class="r">상태</span></div>
           ${list.map((e,i)=>`<div class="erow"><span class="en"><b>${esc(e.name)}</b><span>${i===0?'참여 코드 '+fmtCode(S.event.code):'참여 코드 만료'}</span></span>
-            <span class="c-date num">${fmtDate(e)}</span><span class="r c-n num">${e.n}명</span>
+            <span class="c-date num">${fmtDate(e)}</span><span class="r c-n num"${i===0?' id="evCurN"':''}>${e.n}명</span>
             <span class="r c-st">${i===0?'<span class="chip info"><i></i>진행 중</span>':'<span class="chip neu"><i></i>끝남</span>'}</span></div>`).join('')}
         </section>
         <section class="card ev-form"><h2>새 행사 만들기</h2>
@@ -1177,17 +1277,16 @@ function host(){
     for(let k=1;k<=simCount;k++){if(Math.random()<.9)later(()=>simRespond('sim-'+k),300+Math.random()*spread);}
   }
   function runSim(){
-    if(simBusy)return;simBusy=true;
+    if(simBusy)return;simBusy=true;simJoined=0;
     const base=simCount,n=30;
-    for(let k=1;k<=n;k++)later(()=>act('sim-'+(base+k),{kind:'join'}),110*k+Math.random()*120);
+    for(let k=1;k<=n;k++)later(()=>{simJoined++;act('sim-'+(base+k),{kind:'join'});},110*k+Math.random()*120);
     simCount+=n;
     for(let k=base+1;k<=base+n;k++){if(Math.random()<.92)later(()=>simRespond('sim-'+k),900+Math.random()*6500);}
     const asked=new Set(S.questions.map(q=>q.text));
     const pool=POOL_Q.filter(q=>!asked.has(q[0]));
     pool.slice(0,base?3:5).forEach((q,i)=>later(()=>act('sim-'+(base+3+i*5),{kind:'ask',qid:'sq'+rid(),text:q[0],name:q[1]}),1800+i*1500+Math.random()*600));
     for(let k=0;k<48;k++)later(()=>{
-      const qs=S.questions.filter(q=>q.status==='open');if(!qs.length)return;
-      const q=qs[Math.min(qs.length-1,Math.floor(Math.pow(Math.random(),1.6)*qs.length))];
+      const q=pickQ(S.questions.filter(q=>q.status==='open'));if(!q)return;
       const who='sim-'+(1+Math.floor(Math.random()*simCount));
       if(!q.likers[who])act(who,{kind:'like',qid:q.id});
     },3000+Math.random()*8000);
@@ -1197,10 +1296,39 @@ function host(){
   function clearSim(){timers.forEach(clearTimeout);timers=[];simBusy=false;simCount=0;simW.clear();}
   $('#bSim').onclick=runSim;
   $('#bTab').onclick=()=>{const w=window.open(joinUrl(S.event.code),'_blank');if(!w)toast('팝업이 막혔어요. 주소 뒤에 #join='+S.event.code+' 을 붙여 열어 주세요');};
-  $('#bReset').onclick=()=>{clearSim();S=Object.assign(seed(),{rev:S.rev+1});seenQ.clear();qrCodeShown=null;$('#swMod').setAttribute('aria-checked','false');setTab('live');changed();toast('처음 상태로 돌렸어요');};
+  $('#bReset').onclick=()=>{clearSim();S=Object.assign(seed(),{rev:S.rev+1});seenQ.clear();likesT.reset();lastResId=null;qrCodeShown=null;$('#swMod').setAttribute('aria-checked','false');setTab('live');changed();toast('처음 상태로 돌렸어요');};
 
-  window.__demo={get S(){return S;},runSim,setActive,openPresent,closePresent,setTab,openComposer};
+  /* ---------- 참여자 휴대폰 미리보기 (PC 넓은 화면) ----------
+     같은 페이지를 #join 주소로 iframe에 띄워요. 진행자 화면과 같은 통로로 실시간 연결돼요. */
+  const wide=matchMedia('(min-width:1280px)');
+  let dockOpen=false;
+  function fitPhone(){
+    if(!dockOpen)return;
+    const avail=innerHeight-176,ps=Math.max(.6,Math.min(.84,avail/780));
+    $('#phone').style.setProperty('--ps',ps.toFixed(3));
+  }
+  function setDock(on,remember){
+    dockOpen=!!on&&wide.matches;
+    $('#dock').hidden=!dockOpen;$('#bDock').hidden=dockOpen||!wide.matches;
+    if(dockOpen&&!$('#phoneScr iframe')){
+      const f=document.createElement('iframe');
+      f.title='참여자 휴대폰 화면 (예시)';f.src=joinUrl(S.event.code)+'&dock';
+      $('#phoneScr').appendChild(f);
+    }
+    fitPhone();
+    if(remember)try{localStorage.setItem('sbj-dock',dockOpen?'1':'0');}catch(e){}
+  }
+  $('#bDock').onclick=()=>setDock(true,true);
+  $('#dkClose').onclick=()=>{setDock(false,true);$('#bDock').focus();};
+  addEventListener('resize',fitPhone);
+  (wide.addEventListener?wide.addEventListener('change',()=>setDock(dockOpen||dockPref(),false)):wide.addListener(()=>setDock(dockOpen||dockPref(),false)));
+  function dockPref(){try{return localStorage.getItem('sbj-dock')!=='0';}catch(e){return true;}}
+
+  window.__demo={get S(){return S;},runSim,setActive,openPresent,closePresent,setTab,openComposer,setDock};
   render();bcast();
+  setDock(dockPref(),false);
+  /* 처음 열면 가상 참여자가 스스로 들어오기 시작해요 (빈 화면 대신 움직이는 화면) */
+  later(()=>{if(!simCount&&!simBusy)runSim();},1200);
 }
 
 /* =====================================================================
@@ -1222,23 +1350,71 @@ function participant(codeFromUrl){
     return s;
   }
 
+  const likesT=likeTracker();
+  let lastRejoin=0;
   bus.on(m=>{
     if(m.t!=='state'||!m.S)return;
+    if(standalone)stopAuto();
     S=m.S;synced=true;standalone=false;
     pending=pending.filter(a=>!S.acks.includes(a.mid));
     pending.forEach(a=>applyAct(S,CLIENT,a));
+    /* 진행자가 '처음 상태로'를 눌러도 열려 있던 휴대폰은 다시 참여자로 세요 */
+    if(built&&!S.joined[CLIENT]&&Date.now()-lastRejoin>3000){lastRejoin=Date.now();act({kind:'join'});return;}
     render();
   });
   function hello(){bus.send({t:'hello'});}
   hello();
   const helloT=setInterval(()=>{if(synced){clearInterval(helloT);return;}hello();},2500);
-  setTimeout(()=>{if(!synced){S=standaloneSeed();standalone=true;render();}},900);
+  setTimeout(()=>{if(!synced){S=standaloneSeed();standalone=true;render();startAuto();}},900);
 
   function act(a){
     a.mid=rid();
     if(synced){pending.push(a);applyAct(S,CLIENT,a);bus.send({t:'act',act:a});}
-    else applyAct(S,CLIENT,a);
+    else{applyAct(S,CLIENT,a);if(standalone)autoReact(a);}
     render();
+  }
+
+  /* ---------- 혼자 보기: 진행자 화면 없이 휴대폰만 열었을 때 ----------
+     다른 참여자 응답과 진행 순서를 예시로 흉내 내요. 진행자 화면이 연결되면 바로 멈춰요. */
+  let autoT=[],trickleT=null,exN=23,ticks=0;
+  function alater(fn,ms){const t=setTimeout(()=>{autoT=autoT.filter(x=>x!==t);if(standalone&&S)fn();},ms);autoT.push(t);}
+  function stopAuto(){autoT.forEach(clearTimeout);autoT=[];clearTimeout(trickleT);trickleT=null;}
+  function exVoter(ac){
+    const cand=[];for(let i=1;i<=exN;i++){const id='ex-'+i;if(!ac.voters[id])cand.push(id);}
+    if(cand.length&&(exN>=46||Math.random()<.8))return cand[Math.floor(Math.random()*cand.length)];
+    if(exN<46){exN++;const id='ex-'+exN;applyAct(S,id,{kind:'join'});return id;}
+    return null;
+  }
+  function exRespond(ac){
+    const id=exVoter(ac);if(!id)return false;
+    if(ac.type==='cloud')return applyAct(S,id,{kind:'word',aid:ac.id,word:pickW(POOL_W)});
+    const w=WEIGHTS[ac.id]||ac.options.map(()=>1);
+    return applyAct(S,id,{kind:'vote',aid:ac.id,oid:pickW(ac.options.map((o,j)=>[o.id,w[j]||5]))});
+  }
+  function exTick(){
+    const ac=activeOf(S),r=Math.random();
+    if(ac&&ac.state==='live'&&!ac.closed&&r<.55&&exRespond(ac))return;
+    const qs=S.questions.filter(q=>q.status==='open');
+    if(r<.9&&qs.length){const q=pickQ(qs);
+      const id='ex-'+(1+Math.floor(Math.random()*exN));if(!q.likers[id])applyAct(S,id,{kind:'like',qid:q.id});return;}
+    const asked=new Set(S.questions.map(q=>q.text)),next=POOL_Q.find(q=>!asked.has(q[0]));
+    if(next)applyAct(S,'ex-'+(1+Math.floor(Math.random()*exN)),{kind:'ask',qid:'ex-q'+rid(),text:next[0],name:next[1]});
+  }
+  function startAuto(){
+    const loop=()=>{trickleT=setTimeout(()=>{if(!standalone||!S)return;exTick();render();if(++ticks<140)loop();},900+Math.random()*1300);};
+    loop();
+  }
+  function goLive(aid,burst){
+    const prev=activeOf(S),ac=S.activities.find(a=>a.id===aid);if(!ac)return;
+    if(prev&&prev!==ac)prev.state='done';
+    ac.state='live';S.activeId=aid;S.rev++;
+    for(let i=0;i<burst;i++)exRespond(ac);
+    render();
+  }
+  function autoReact(a){
+    const ac=S.activities.find(x=>x.id===a.aid);
+    if(a.kind==='vote'&&ac&&ac.type==='poll')alater(()=>goLive('a2',7),6000);
+    if(a.kind==='vote'&&ac&&ac.type==='quiz')alater(()=>{ac.closed=true;ac.revealed=true;S.rev++;render();toast('진행자가 정답을 공개했어요');alater(()=>goLive('a3',9),7000);},3800);
   }
 
   /* 뼈대 */
@@ -1247,7 +1423,7 @@ function participant(codeFromUrl){
       <div class="p-band">제안용 데모 · 예시</div>
       <header class="p-top">
         <span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mark"/></svg></span>
-        <div class="pt"><p class="p-ev" id="pEv"></p><p class="p-code">참여 코드 <span class="num" id="pCode"></span></p></div>
+        <div class="pt"><p class="p-ev" id="pEv"></p><p class="p-code">참여 코드 <span class="num" id="pCode"></span><span aria-hidden="true"> · </span><span class="num" id="pPc"></span>명 참여 중</p></div>
         <span id="pMode"></span>
       </header>
       <div class="seg p-seg" role="tablist" aria-label="참여 메뉴">
@@ -1291,6 +1467,7 @@ function participant(codeFromUrl){
     $('#pSubmit').onclick=()=>{
       const ac=activeOf(S);if(!ac||!sel[ac.id])return;
       const b=$('#pSubmit');b.disabled=true;b.textContent='보내는 중…';
+      try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.isActive))navigator.vibrate(12);}catch(_){}
       setTimeout(()=>{act({kind:'vote',aid:ac.id,oid:sel[ac.id]});toast(ac.type==='quiz'?'답을 보냈어요':'투표했어요');},350);
     };
     $('#pQl').onclick=e=>{const b=e.target.closest('[data-like]');if(b)act({kind:'like',qid:b.dataset.like});};
@@ -1305,10 +1482,11 @@ function participant(codeFromUrl){
         <input class="in codein num" id="jCode" inputmode="numeric" maxlength="6" placeholder="000000" aria-label="참여 코드 6자리" autocomplete="off">
         <p class="err-t" id="jErr" ${err?'':'hidden'} style="margin-top:8px">${esc(err||'')}</p>
         <button class="btn primary cta" style="margin-top:16px" type="submit">들어가기</button>
-        <p class="help" style="margin-top:16px">데모 코드: 482 913</p>
+        <button class="btn demo-code num" type="button" id="jDemo">데모 코드 ${fmtCode(S?S.event.code:'482913')}으로 들어가기</button>
       </form></div>`;
     const inp=$('#jCode');
-    inp.oninput=()=>{inp.value=inp.value.replace(/\D/g,'').slice(0,6);};
+    inp.oninput=()=>{inp.value=inp.value.replace(/\D/g,'').slice(0,6);if(inp.value.length===6){inp.classList.remove('err');$('#jErr').hidden=true;}};
+    $('#jDemo').onclick=()=>{inp.value=S?S.event.code:'482913';inp.classList.remove('err');$('#jErr').hidden=true;$('#jForm').requestSubmit?$('#jForm').requestSubmit():$('#jForm').onsubmit(new Event('submit'));};
     $('#jForm').onsubmit=e=>{
       e.preventDefault();
       const v=inp.value;
@@ -1331,9 +1509,10 @@ function participant(codeFromUrl){
     if(!built){shell();built=true;if(!S.joined[CLIENT])act({kind:'join'});}
     $('#pEv').textContent=S.event.name;
     $('#pCode').textContent=fmtCode(S.event.code);
+    $('#pPc').textContent=fmtN(pcount(S));
     $('#pMode').innerHTML=synced?'<span class="chip ok"><i></i>실시간 연결</span>':'<span class="chip neu"><i></i>혼자 보기</span>';
     $('#pFoot').textContent=synced?'진행자 화면과 실시간으로 연결돼 있어요. 실제 서비스는 웹소켓으로 연결해요.'
-      :'진행자 화면이 열려 있지 않아 혼자 보기로 보여 줘요. 다른 사람 응답은 예시예요. 같은 브라우저에서 진행자 화면을 열면 실시간으로 연결돼요.';
+      :'진행자 화면이 열려 있지 않아 혼자 보기로 보여 줘요. 다른 사람 응답과 진행 순서는 예시로 자동 진행돼요. 같은 브라우저에서 진행자 화면을 열면 실시간으로 연결돼요.';
     const open=S.questions.filter(q=>q.status==='open'||q.status==='answered');
     $('#pQn').textContent=open.length?' '+open.length:'';
     $('#pVote').hidden=ptab!=='vote';$('#pQa').hidden=ptab!=='qa';
@@ -1354,7 +1533,7 @@ function participant(codeFromUrl){
     const key=[ac.id,ac.type,myKey,ac.closed,ac.revealed,ac.showResult,(ac.options||[]).map(o=>o.id).join(',')].join('~');
     if(key!==voteKey){
       voteKey=key;rv=null;cloudRv=null;
-      const head=`<span class="chip type">${ic(ac.type,'sm')}${TYPE[ac.type]}</span>${ac.closed?' <span class="chip neu"><i></i>마감</span>':''}<h2 class="p-q">${esc(ac.title)}</h2>`;
+      const head=`<div class="chips"><span class="chip type">${ic(ac.type,'sm')}${TYPE[ac.type]}</span>${ac.closed?'<span class="chip neu"><i></i>마감</span>':''}</div><h2 class="p-q">${esc(ac.title)}</h2>`;
       let body='';
       if(ac.type==='cloud'){
         const mine=my||[];
@@ -1400,15 +1579,16 @@ function participant(codeFromUrl){
   }
   function renderQa(){
     if(!$('#pQl'))return;
+    likesT.scan(S.questions);
     const mine=S.questions.filter(q=>q.by===CLIENT&&q.status==='pending');
     const list=S.questions.filter(q=>q.status==='open'||q.status==='answered')
       .sort(qaSort==='hot'?(a,b)=>b.likes-a.likes||a.ts-b.ts:(a,b)=>b.ts-a.ts);
-    let h=mine.map(q=>`<div class="q"><div class="q-main"><p class="q-t">${esc(q.text)}</p><p class="q-m"><span class="chip warn"><i></i>검토 중</span><span>진행자가 확인하면 공개돼요</span></p></div></div>`).join('');
-    h+=list.length?list.map(q=>{const on=!!q.likers[CLIENT];return `<div class="q">
+    let h=mine.map(q=>`<div class="q" data-qid="${q.id}"><div class="q-main"><p class="q-t">${esc(q.text)}</p><p class="q-m"><span class="chip warn"><i></i>검토 중</span><span>진행자가 확인하면 공개돼요</span></p></div></div>`).join('');
+    h+=list.length?list.map(q=>{const on=!!q.likers[CLIENT];return `<div class="q" data-qid="${q.id}">
       <div class="q-main"><p class="q-t">${esc(q.text)}</p><p class="q-m"><span>${esc(q.name)}${q.by===CLIENT?' (나)':''}</span><span aria-hidden="true">·</span><span>${ago(q.ts)}</span>${q.status==='answered'?'<span class="chip ok"><i></i>답변함</span>':''}</p></div>
-      <button class="like num" data-like="${q.id}" aria-pressed="${on}" aria-label="좋아요 ${q.likes}개${on?', 누름':''}">${ic('thumb','sm')}${q.likes}</button></div>`;}).join('')
+      <button class="like num${likesT.cls(q)}" data-like="${q.id}" aria-pressed="${on}" aria-label="좋아요 ${q.likes}개${on?', 누름':''}">${ic('thumb','sm')}${q.likes}</button></div>`;}).join('')
       :(mine.length?'':`<div class="empty"><span class="e-ic">${ic('qa')}</span><b>아직 질문이 없어요</b><p>첫 질문을 남겨 보세요. 다른 사람이 좋아요를 누르면 위로 올라가요.</p></div>`);
-    $('#pQl').innerHTML=h;
+    flipHTML($('#pQl'),h);
   }
   setInterval(()=>{if(S&&built)renderQa();},30000);
   window.__demo={get S(){return S;},get synced(){return synced;}};
